@@ -34,9 +34,10 @@ import java.awt.Color;
 public class Yuhuu extends JFrame{
 	
 	private static Client ChatClient;
+	private static Client WChatClient;
 	public static String username ="No-Name";
 	public static String ip;
-	
+	public static String io;
 	//interface buat login
 	public static JFrame login = new JFrame();
 	public static JTextField txtlogin = new JTextField(20);
@@ -62,6 +63,11 @@ public class Yuhuu extends JFrame{
 	private static JButton btndc = new JButton("Disconnect");
 	static String serveradd;
 	
+	//buat whisper
+	public static JFrame whisperr = new JFrame();
+	public static JFrame frame;
+	public static JTextField textField;
+	public static JTextField textField_1;
 	
 	
 	public static void main(String args[]){
@@ -87,6 +93,32 @@ public class Yuhuu extends JFrame{
 		}catch(Exception e){
 			
 		}
+	}
+	
+	public static void WConnect(String aio){
+		try
+		{
+				final int wPORT = 1022;
+				final String wHOST = aio;
+				Socket wSOCK = new Socket(wHOST, wPORT);
+				System.out.println("You connected to : " + wHOST);
+				ip = wSOCK.getRemoteSocketAddress().toString();
+				
+				WChatClient = new Client(wSOCK);
+				
+				//buat liat orang yg online
+				PrintWriter wOUT = new PrintWriter(wSOCK.getOutputStream());
+				wOUT.println(username);
+				wOUT.flush();
+				
+				Thread wX = new Thread(WChatClient);
+				wX.start();
+			}
+			catch(Exception wX){
+				System.out.print(wX);
+				JOptionPane.showMessageDialog(null, "Server not Responding");
+				System.exit(0);
+			}
 	}
 	
 	public static void Connect(){
@@ -189,7 +221,7 @@ public class Yuhuu extends JFrame{
 		login.getContentPane().add(btnlogin);
 		login.setVisible(true);
 	}
-	/*
+	
 	public static int returnn()throws Exception{
 		int asd = listuser.getSelectedIndex();
 		return asd;
@@ -210,6 +242,7 @@ public class Yuhuu extends JFrame{
 		while(ipeh.next()){
 			String ipeeh = ipeh.getString("ipaddress");
 			ipe.add(ipeeh);
+			
 		}
 		}catch(Exception ae){
 			
@@ -223,10 +256,10 @@ public class Yuhuu extends JFrame{
 		String tesip = ipe.get(asd);
 		String ipC1 = tesip.replace("/", ""); 
 		System.out.println("ip " + ipC1);
-		
+		JOptionPane.showMessageDialog(listuser, ipC1);
 		return ipC1;
 	}
-	*/
+	
 	public static void GUImain(){
 		
 		mainyuhuu.setTitle("Anda login sebagai : " + username);
@@ -261,19 +294,18 @@ public class Yuhuu extends JFrame{
 		listuser.setToolTipText("");
 		listuser.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		
-		/*listuser.addListSelectionListener(new ListSelectionListener(){
+		listuser.addListSelectionListener(new ListSelectionListener(){
 		public void valueChanged(ListSelectionEvent al){
 			try {
 				int asd = returnn();
-				datawhisp(asd);
+				io = datawhisp(asd);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 		}
-		
-		});*/
+		});
 		
 		listuser.setBounds(510, 60, 89, 250);
 		mainyuhuu.getContentPane().add(listuser);
@@ -358,11 +390,15 @@ public class Yuhuu extends JFrame{
 		whisp.setBounds(555, 343, 74, 20);
 		mainyuhuu.getContentPane().add(whisp);
 		
-/*
+
 		whisp.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					whisper();
+					JOptionPane.showMessageDialog(listuser, io);
+					String aio = JOptionPane.showInputDialog("Anda ingin Whisper?", "Alamat Ip Tujuan");
+					io =  aio;
+					JOptionPane.showMessageDialog(null, "", io.substring(0,13), 0);
+					whisper(io);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -370,49 +406,62 @@ public class Yuhuu extends JFrame{
 			}
 			
 		});
-		*/
+		
 		mainyuhuu.setVisible(true);
 		
 	}	
 	public static void disp(){
 	mainyuhuu.dispose();
 	}
-	/*
-	public static void whisper() throws Exception{
+	
+	public static void whispermain() {
 		
-		
-		
-		System.out.println("port: " + ip);
-		String portt = ip.substring(8);
-		System.out.println("nomor: " + portt);
-		
-		class Server {
-			public ArrayList<Socket> ConnectionArray = new ArrayList<Socket>();
-			public ArrayList<String> CurrentUsers = new ArrayList<String>();
+			whisperr = new JFrame();
+			whisperr.setBounds(100, 100, 450, 300);
+			whisperr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			whisperr.getContentPane().setLayout(null);
 			
+			textField = new JTextField();
+			textField.setEditable(false);
+			textField.setBounds(50, 11, 247, 162);
+			whisperr.getContentPane().add(textField);
+			textField.setColumns(10);
 			
+			textField_1 = new JTextField();
+			textField_1.setBounds(50, 184, 154, 20);
+			whisperr.getContentPane().add(textField_1);
+			textField_1.setColumns(10);
 			
-			public void main(String[] args) throws IOException{
-			 try{
-				 	final int PORT = 1022; 
-				 	ServerSocket SERVER = new ServerSocket(PORT);
-				 	
-				 	while(true){
-				 		Socket SOCK = SERVER.accept();
-				 		ConnectionArray.add(SOCK);
-				 		
-				 		System.out.println("Client connected from :" +SOCK.getLocalAddress().getHostName());
-				 		
-				 		
-				 		ServerReturn CHAT = new ServerReturn(SOCK);
-				 		Thread X = new Thread(CHAT);
-				 		X.start();
-				 	}
-				 	}
-			 catch(Exception X){
-				 System.out.print(X);
-			 }
-			}}
+			JButton btnNewButton = new JButton("send");
+			btnNewButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					
+							if(!textField_1.getText().equals("")){
+								WChatClient.SEND(textField_1.getText());
+								textField_1.requestFocus();}
+								
+					
+				}
+			});;
+			btnNewButton.setBounds(214, 184, 83, 23);
+			frame.getContentPane().add(btnNewButton);
+			
+			whisperr.setVisible(true);
+		}
+	
+
+	
+	
+	public static void whisper(String io) throws Exception{
+		
+		String aia = io.substring(0,13);
+		WConnect(aia);
+		whispermain();
+		whisperr.setVisible(true);
+		
+		
+		
 	}
-	*/
+	
+	
 }
