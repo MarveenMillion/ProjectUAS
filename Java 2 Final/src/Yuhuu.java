@@ -60,13 +60,14 @@ public class Yuhuu extends JFrame{
 	private static JLabel lblOmaigle = new JLabel("OMAIGLE");
 	private static JScrollPane scrollchat = new JScrollPane(chat);
 	private static JButton btndc = new JButton("Disconnect");
-	
+	static String serveradd;
 	
 	
 	
 	public static void main(String args[]){
 //		GUImain();
 		GUIlogin();
+		serveradd=JOptionPane.showInputDialog("Enter Ip Address");
 }
 	
 	
@@ -92,7 +93,7 @@ public class Yuhuu extends JFrame{
 		try
 		{
 				final int PORT =1022;
-				final String HOST ="192.168.0.107";
+				final String HOST =serveradd;
 				Socket SOCK = new Socket(HOST, PORT);
 				System.out.println("You connected to : " + HOST);
 				ip = SOCK.getRemoteSocketAddress().toString();
@@ -259,6 +260,7 @@ public class Yuhuu extends JFrame{
 		listuser.setVisibleRowCount(20);
 		listuser.setToolTipText("");
 		listuser.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		
 		/*listuser.addListSelectionListener(new ListSelectionListener(){
 		public void valueChanged(ListSelectionEvent al){
 			try {
@@ -272,6 +274,7 @@ public class Yuhuu extends JFrame{
 		}
 		
 		});*/
+		
 		listuser.setBounds(510, 60, 89, 250);
 		mainyuhuu.getContentPane().add(listuser);
 		
